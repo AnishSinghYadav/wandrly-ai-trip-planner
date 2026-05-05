@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Goa",
+    "emoji": "🏖️",
+    "gradient": "linear-gradient(135deg, #f97316, #ec4899)",
+    "season": "November – March",
+    "description": "Golden beaches, electric nightlife, colonial Portuguese architecture, and world-class seafood. Goa is India's original party capital — but also hides serene spice farms, ancient temples, and lazy river cruises.",
+    "highlights": ["Beaches", "Nightlife & Clubs", "Portuguese Heritage", "Seafood", "Spice Farms"],
+    "budget": "Medium",
+    "vibe": "Party & Chill 🎉",
+    "avg_temp": "27°C",
+    "language": "Konkani / English"
+  },
+  {
+    "name": "Rajasthan",
+    "emoji": "🏰",
+    "gradient": "linear-gradient(135deg, #f59e0b, #ef4444)",
+    "season": "October – March",
+    "description": "The land of kings — opulent palaces, rose-pink cities, endless Thar desert dunes, and some of the finest cuisine in Asia. Jaipur, Udaipur, Jodhpur, and Jaisalmer each tell a different royal story.",
+    "highlights": ["Palaces & Forts", "Desert Safari", "Camel Rides", "Folk Music", "Textile Markets"],
+    "budget": "Low–Medium",
+    "vibe": "Cultural & Adventure 🎭",
+    "avg_temp": "22°C",
+    "language": "Hindi / Rajasthani"
+  },
+  {
+    "name": "Kerala",
+    "emoji": "🌿",
+    "gradient": "linear-gradient(135deg, #22c55e, #14b8a6)",
+    "season": "September – March",
+    "description": "God's Own Country — glassy backwater lagoons, misty tea estates in Munnar, pristine Kovalam beaches, and Ayurvedic wellness retreats. Kerala is India's most photogenic state.",
+    "highlights": ["Backwaters", "Tea Estates", "Ayurveda", "Beaches", "Wildlife"],
+    "budget": "Medium",
+    "vibe": "Chill & Nature 🌴",
+    "avg_temp": "28°C",
+    "language": "Malayalam / English"
+  },
+  {
+    "name": "Himachal Pradesh",
+    "emoji": "🏔️",
+    "gradient": "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+    "season": "April – June (Summer) / Dec–Feb (Snow)",
+    "description": "Where Himalayas touch the sky — trekking routes to 5000m+, the spiritual Spiti Valley, Manali's snow peaks, paragliding in Bir, and chilled apple orchards of Kinnaur.",
+    "highlights": ["Trekking", "Paragliding", "Spiti Valley", "Snow Activities", "Buddhist Monasteries"],
+    "budget": "Low–Medium",
+    "vibe": "Adventure & Outdoors 🏔️",
+    "avg_temp": "15°C",
+    "language": "Hindi / Pahari"
+  },
+  {
+    "name": "Varanasi",
+    "emoji": "🕯️",
+    "gradient": "linear-gradient(135deg, #f59e0b, #a855f7)",
+    "season": "October – March",
+    "description": "The spiritual soul of India — ancient Ganga ghats that have witnessed 3000 years of civilization, the hypnotic Ganga Aarti, silk weaving lanes, and dawn boat rides on the holiest river.",
+    "highlights": ["Ganga Ghats", "Evening Aarti", "Silk Shopping", "Ancient Temples", "Boat Rides"],
+    "budget": "Low",
+    "vibe": "Spiritual & Cultural 🙏",
+    "avg_temp": "23°C",
+    "language": "Hindi"
+  },
+  {
+    "name": "Andaman Islands",
+    "emoji": "🌊",
+    "gradient": "linear-gradient(135deg, #06b6d4, #3b82f6)",
+    "season": "November – May",
+    "description": "India's hidden Maldives — crystal-clear turquoise lagoons, pristine Radhanagar Beach (Asia's #2 beach), world-class scuba diving, bioluminescent night kayaking, and UNESCO-listed coral reefs.",
+    "highlights": ["Scuba Diving", "Pristine Beaches", "Snorkeling", "Night Kayaking", "Cellular Jail"],
+    "budget": "Medium–High",
+    "vibe": "Adventure & Romance 🐠",
+    "avg_temp": "29°C",
+    "language": "Hindi / Bengali"
+  }
+]

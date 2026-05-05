@@ -1,0 +1,50 @@
+[
+  {
+    "state": "Goa",
+    "transport": "Scooter/Bike Rental, Taxis (app & metered), Local Buses (KTC), Auto-Rickshaws",
+    "fare_range": "Scooter ₹300–500/day | Auto ₹100–300 | Taxi ₹500–1200 one-way",
+    "tip": "Renting a scooter is the best way to explore Goa — parking is free almost everywhere."
+  },
+  {
+    "state": "Rajasthan",
+    "transport": "Auto-Rickshaws, Tuk-Tuks, City Buses, Camel/Horse Carts (heritage), Cab aggregators (Ola/Uber in cities)",
+    "fare_range": "Auto ₹50–400 | Cab ₹700–1500 inter-city | Camel cart ₹200–500",
+    "tip": "Agree on the fare before boarding autos. Uber/Ola available in Jaipur, Jodhpur, Udaipur."
+  },
+  {
+    "state": "Kerala",
+    "transport": "KSRTC Buses (extensive network), Autos, Cab apps, Houseboats, Ferries (backwaters), Local Boats",
+    "fare_range": "Bus ₹20–200 | Auto ₹60–300 | Houseboat ₹8000–25000/night | Ferry ₹20–100",
+    "tip": "Ferries across backwaters are scenic and very affordable — use them instead of road for short distances."
+  },
+  {
+    "state": "Himachal Pradesh",
+    "transport": "HRTC Buses (affordable, scenic), Shared Taxis (jeeps), Private Cabs, Local Autos in towns",
+    "fare_range": "Shared jeep ₹100–600 | Private cab ₹2000–6000/day | Bus ₹50–500",
+    "tip": "For Spiti and remote areas, shared jeeps from Manali are the only practical option."
+  },
+  {
+    "state": "Uttar Pradesh",
+    "transport": "E-Rickshaws (e-Autos), Autos, City Buses, Cycle Rickshaws (Old City), Boat rides on Ganga",
+    "fare_range": "E-auto ₹20–80 | Cycle rickshaw ₹50–150 | Boat ₹200–1000/hour | Cab ₹400–900",
+    "tip": "In Varanasi's old city, cycle rickshaws and walking are best — streets are too narrow for cars."
+  },
+  {
+    "state": "Andaman and Nicobar Islands",
+    "transport": "Government Ferries (between islands), Private Speed Boats, Auto-Rickshaws, Scooter Rentals",
+    "fare_range": "Ferry ₹200–1500 | Speed boat ₹1000–4000 | Scooter ₹400–600/day | Auto ₹100–400",
+    "tip": "Book government ferry tickets in advance online — they sell out fast for Neil and Havelock islands."
+  },
+  {
+    "state": "Tamil Nadu",
+    "transport": "Chennai Metro, TNSTC Buses, Autos (metered), Ola/Uber, Share Autos",
+    "fare_range": "Metro ₹10–60 | Auto ₹80–400 | Cab ₹250–800 | Bus ₹10–200",
+    "tip": "Chennai autos are metered; insist on using the meter. Ola/Uber are reliable alternatives."
+  },
+  {
+    "state": "Maharashtra",
+    "transport": "Mumbai Local Trains (lifeline), BEST Buses, Metro, Autos, Taxis, Ola/Uber",
+    "fare_range": "Local train ₹10–60 | Auto ₹30–400 | Taxi ₹200–1500 | Metro ₹10–40",
+    "tip": "In Mumbai, local trains are the fastest way to get around — buy a day pass for unlimited trips."
+  }
+]
