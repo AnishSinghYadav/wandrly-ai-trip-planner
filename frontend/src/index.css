@@ -25,9 +25,9 @@
   --rose-accent:    196   80  100;
 
   --text-primary:   245  240  228;   /* warm cream */
-  --text-secondary: 180  165  140;   /* muted gold-cream */
-  --text-muted:     100   90   75;
-  --text-dim:        55   50   42;
+  --text-secondary: 200  183  155;   /* muted gold-cream */
+  --text-muted:     158  144  120;   /* readable mid-tone */
+  --text-dim:       108   98   82;   /* subtle dim */
 
   --border-gold:    196  154   73;
   --border-subtle:  255  252  242;
@@ -220,12 +220,12 @@ body {
   .btn-luxury {
     background: linear-gradient(
       135deg,
-      rgba(var(--gold), 0.9) 0%,
-      rgba(var(--gold-bright), 0.95) 50%,
-      rgba(var(--gold), 0.9) 100%
+      rgb(var(--gold)) 0%,
+      rgb(var(--gold-bright)) 50%,
+      rgb(var(--gold)) 100%
     );
     background-size: 200% auto;
-    color: rgb(var(--bg-void));
+    color: #0a0f1e;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -267,7 +267,7 @@ body {
       0 0 80px rgba(var(--gold), 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.35);
     transform: translateY(-2px) scale(1.01);
-    color: rgb(var(--bg-void));
+    color: #0a0f1e;
   }
 
   .btn-luxury:active {
@@ -481,7 +481,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: rgb(var(--bg-void));
+    color: #0a0f1e;
     font-size: 10px;
     font-weight: 800;
     line-height: 1;
