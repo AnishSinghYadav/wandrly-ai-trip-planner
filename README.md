@@ -13,7 +13,17 @@
 
 *Plan it. Vibe it. Live it.*
 
+[![Demo Video](https://img.shields.io/badge/▶_Watch_Demo-Tutorial_Video-red?style=for-the-badge&logo=github)](https://github.com/AnishSinghYadav/wandrly-ai-trip-planner/releases/tag/v1.0.0)
+
 </div>
+
+---
+
+## 🎬 Demo Video
+
+> Watch the full tutorial on how to set up and use Wandrly:
+
+**[▶ Click here to watch the demo video](https://github.com/AnishSinghYadav/wandrly-ai-trip-planner/releases/tag/v1.0.0)**
 
 ---
 
