@@ -44,9 +44,6 @@ Wandrly is a fully AI-powered luxury travel planner that orchestrates **6 specia
     <td align="center"><img src="screenshots/07.png" width="420"/></td>
     <td align="center"><img src="screenshots/08.png" width="420"/></td>
   </tr>
-  <tr>
-    <td align="center" colspan="2"><img src="screenshots/09.png" width="420"/></td>
-  </tr>
 </table>
 
 ---
