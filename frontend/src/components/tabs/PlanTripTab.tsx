@@ -447,8 +447,6 @@ function TripSidebar({
   }, [selectedIndiaDest])
 
   const today = new Date().toISOString().split('T')[0]
-  const defaultStart = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0]
-  const defaultEnd   = new Date(Date.now() + 37 * 86400000).toISOString().split('T')[0]
 
   const daysLeft = form.startDate
     ? Math.max(0, Math.round((new Date(form.startDate).getTime() - Date.now()) / 86400000))
@@ -515,13 +513,13 @@ function TripSidebar({
             <div>
               <Label>Departure</Label>
               <input type="date" className="lux-input" min={today}
-                value={form.startDate || defaultStart}
+                value={form.startDate}
                 onChange={(e) => setForm((p) => ({ ...p, startDate: e.target.value }))} />
             </div>
             <div>
               <Label>Return</Label>
               <input type="date" className="lux-input" min={form.startDate || today}
-                value={form.endDate || defaultEnd}
+                value={form.endDate}
                 onChange={(e) => setForm((p) => ({ ...p, endDate: e.target.value }))} />
             </div>
           </div>
@@ -744,14 +742,18 @@ function EmptyState() {
 export default function PlanTripTab() {
   const { planning, setPlanningField, resetPlanning, clearChat, selectedIndiaDest } = useAppStore()
 
-  const [form, setForm] = useState<TripFormData>({
-    origin: 'New Delhi, India',
-    destination: 'Tokyo, Japan',
-    startDate: '', endDate: '',
-    noOfMembers: 2,
-    interests: VIBE_MAP['Adventure 🏔️'],
-    tripVibe: 'Adventure 🏔️',
-    onlyVeg: false, religious: false,
+  const [form, setForm] = useState<TripFormData>(() => {
+    const defaultStart = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0]
+    const defaultEnd   = new Date(Date.now() + 37 * 86400000).toISOString().split('T')[0]
+    return {
+      origin: 'New Delhi, India',
+      destination: 'Tokyo, Japan',
+      startDate: defaultStart, endDate: defaultEnd,
+      noOfMembers: 2,
+      interests: VIBE_MAP['Adventure 🏔️'],
+      tripVibe: 'Adventure 🏔️',
+      onlyVeg: false, religious: false,
+    }
   })
 
   const handlePlanTrip = async () => {

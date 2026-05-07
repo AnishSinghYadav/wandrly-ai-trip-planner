@@ -65,8 +65,39 @@ class LocalTipsRequest(BaseModel):
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
 
+def _parse_budget(raw: str) -> dict | None:
+    """Robustly parse budget JSON from LLM output."""
+    if not raw:
+        return None
+    # Strip markdown code fences if present
+    text = raw.strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        text = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+    try:
+        parsed = json.loads(text)
+        # Unwrap nested dict e.g. {"budget": {...}} or {"result": {...}}
+        if isinstance(parsed, dict) and len(parsed) == 1:
+            inner = next(iter(parsed.values()))
+            if isinstance(inner, dict):
+                parsed = inner
+        # Sanitise: coerce string numbers to int, drop non-numeric values
+        KEYS = {"Flights", "Hotels", "Food", "Activities", "Transport"}
+        result = {}
+        for k, v in parsed.items():
+            if k not in KEYS:
+                continue
+            try:
+                result[k] = int(float(str(v).replace(",", "").replace("₹", "").strip()))
+            except (ValueError, TypeError):
+                pass
+        return result if result else None
+    except Exception:
+        return None
+
+
 def _sse(event: str, data: dict) -> str:
-    payload = json.dumps({"event": event, **data})
+    payload = json.dumps({"event": event, **data}, ensure_ascii=False, allow_nan=False)
     return f"data: {payload}\n\n"
 
 
@@ -106,7 +137,11 @@ async def packing_list(req: PackingRequest):
         req.destination, req.no_of_days, req.trip_vibe, req.interests
     )
     try:
-        return {"result": json.loads(result)}
+        text = result.strip()
+        if text.startswith("```"):
+            lines = text.splitlines()
+            text = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+        return {"result": json.loads(text)}
     except Exception:
         return {"result": {}, "error": "parse_error"}
 
@@ -166,10 +201,7 @@ async def plan_trip(req: PlanTripRequest):
                 executor, budget_agent,
                 booking_data, no_of_days, req.no_of_members, req.destination,
             )
-            try:
-                budget_json = json.loads(budget_raw)
-            except Exception:
-                budget_json = None
+            budget_json = _parse_budget(budget_raw)
             yield _sse("budget", {"budget": budget_json})
 
             yield _sse("progress", {"step": 4, "pct": 46, "label": "Finding events at your destination…"})

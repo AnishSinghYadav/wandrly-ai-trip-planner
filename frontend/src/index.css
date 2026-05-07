@@ -8,6 +8,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
+  color-scheme: dark;
   /* ── Dark (default): Deep Midnight Vault ── */
   --bg-void:        1    2    12;
   --bg-deep:        3    5    15;
@@ -50,6 +51,7 @@
 }
 
 [data-theme='light'] {
+  color-scheme: light;
   --bg-void:        250  248  240;
   --bg-deep:        245  240  230;
   --bg-mid:         255  252  244;
