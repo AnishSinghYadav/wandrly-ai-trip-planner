@@ -120,14 +120,7 @@ export default function App() {
   }, [theme])
 
   return (
-    <div
-      style={{
-        background: 'rgb(var(--bg-void))',
-        minHeight: '100vh',
-        position: 'relative',
-        transition: 'background 0.5s ease',
-      }}
-    >
+    <div className="min-h-screen bg-void relative transition-bg duration-500">
       {/* Background layers — z-index 0 */}
       <AuroraTop />
       <LuxuryBlobs />
@@ -136,17 +129,16 @@ export default function App() {
       <GrainOverlay />
 
       {/* Content — z-index 10+ */}
-      <div className="relative" style={{ zIndex: 10 }}>
+      <div className="relative z-10">
         <Navbar />
         <HeroSection />
 
-        <main
-          style={{
-            maxWidth: '1280px',
-            margin: '0 auto',
-            padding: '0 1.5rem 6rem',
-          }}
-        >
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          {/* Gold accent line */}
+          <div
+            className="h-px mb-10 bg-gradient-to-r from-transparent via-gold/30 to-transparent"
+          />
+
           {/* Gold accent line */}
           <div
             style={{
