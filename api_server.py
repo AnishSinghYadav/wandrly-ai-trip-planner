@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-executor = ThreadPoolExecutor(max_workers=8)
+executor = ThreadPoolExecutor(max_workers=2)
 
 
 # ── Request Models ──────────────────────────────────────────────────────────
@@ -180,6 +180,8 @@ async def plan_trip(req: PlanTripRequest):
             yield _sse("progress", {"step": 0, "pct": 3, "label": "Warming up the engines…"})
 
             images = await loop.run_in_executor(executor, fetch_images, req.destination)
+            # Limit to first 5 images to save memory
+            images = images[:5]
             yield _sse("images", {"images": images})
 
             yield _sse("progress", {"step": 1, "pct": 12, "label": "Planning your trip…"})
@@ -213,6 +215,9 @@ async def plan_trip(req: PlanTripRequest):
             scraped_text = await loop.run_in_executor(
                 executor, fetch_and_scrape_blogs, req.destination,
             )
+            # Truncate scraped text to keep vector DB size manageable
+            if isinstance(scraped_text, str):
+                scraped_text = scraped_text[:20000]
 
             yield _sse("progress", {"step": 6, "pct": 65, "label": "Building knowledge base…"})
             vector_db = await loop.run_in_executor(executor, build_vector_db, scraped_text)
