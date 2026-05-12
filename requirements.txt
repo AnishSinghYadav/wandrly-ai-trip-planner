@@ -20,3 +20,5 @@ markdown-pdf
 requests
 lxml
 supabase
+fastapi
+uvicorn

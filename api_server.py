@@ -251,3 +251,9 @@ async def plan_trip(req: PlanTripRequest):
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+# ── Serve React Frontend (For Single-Service Deployment) ────────────────────
+frontend_path = os.path.join(os.path.dirname(__file__), "frontend", "dist")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+

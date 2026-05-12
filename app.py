@@ -17,20 +17,10 @@ from agents import (
     planner_agent, research_agent, summary_agent, booking_agent,
     fetch_events, fetch_images, get_coordinates, budget_agent, chat_agent,
     suggester_agent, fetch_and_scrape_blogs, build_vector_db,
-    packing_agent, local_tips_agent, fetch_live_flights
+    packing_agent, local_tips_agent
 )
-import auth as wb_auth
-import re as _re
 
 load_dotenv(override=True)
-
-def _to_int(val):
-    """Convert a budget value to int robustly — handles '50000', 4760, 'min(...)=4760 * 2', etc."""
-    try:
-        return int(val)
-    except (TypeError, ValueError):
-        nums = _re.findall(r'\d+', str(val))
-        return int(nums[-1]) if nums else 0
 
 st.set_page_config(
     page_title="Wandrly — AI Trip Planner",
@@ -600,27 +590,6 @@ def load_local_lottie(path):
         return None
 
 
-# ── Dark / Light mode CSS injection ──────────────────────────────────────────
-if not st.session_state.get("dark_mode", True):
-    st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%) !important;
-        color: #0f172a !important;
-    }
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #e8eeff 0%, #f0f4ff 100%) !important;
-        border-right: 1px solid rgba(78,205,196,0.3) !important;
-    }
-    p, h1, h2, h3, h4, span, label, div { color: #0f172a !important; }
-    .glass-card {
-        background: rgba(255,255,255,0.85) !important;
-        border-color: rgba(78,205,196,0.3) !important;
-    }
-    ::-webkit-scrollbar-track { background: #f0f4ff !important; }
-    </style>
-    """, unsafe_allow_html=True)
-
 # Hero logo — girl travel walk cycle
 lottie_anim = load_local_lottie(os.path.join(os.path.dirname(__file__), "girl travel walk cycle.json"))
 
@@ -670,11 +639,6 @@ defaults = {
     "pack_checked": {},
     "main_dest": "Tokyo, Japan",
     "main_origin": "New Delhi, India",
-    "dark_mode": True,
-    # ── Auth ──
-    "wb_user": None,
-    "wb_session": None,
-    "wb_auth_mode": "login",
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -709,13 +673,11 @@ st.markdown("<div style='margin-bottom:0.5rem'></div>", unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
 # MAIN TABS
 # ─────────────────────────────────────────────────────────────────────────────
-tab_plan, tab_vibe, tab_india, tab_pack, tab_history, tab_flights = st.tabs([
+tab_plan, tab_vibe, tab_india, tab_pack = st.tabs([
     "🗺️  Plan My Trip",
     "✨  Vibe Match",
     "🇮🇳  Explore India",
     "🧳  Pack Smart",
-    "🗂️  Trip History",
-    "✈️  Flight Tracker",
 ])
 
 
@@ -726,63 +688,6 @@ with tab_plan:
 
     # ── SIDEBAR ──────────────────────────────────────────────────────────────
     with st.sidebar:
-
-        # ── AUTH PANEL ───────────────────────────────────────────────────────
-        supabase_ok = bool(os.environ.get("SUPABASE_URL") and os.environ.get("SUPABASE_ANON_KEY"))
-
-        if supabase_ok:
-            if st.session_state.wb_user:
-                # Logged-in pill
-                user_email = st.session_state.wb_user.email
-                st.markdown(f"""
-                <div style="background:rgba(78,205,196,0.08);border:1px solid rgba(78,205,196,0.25);
-                            border-radius:14px;padding:0.75rem 1rem;margin-bottom:0.75rem;">
-                    <p style="margin:0;font-size:0.68rem;color:#4ecdc4;font-weight:700;
-                               letter-spacing:1px;text-transform:uppercase;">Signed in as</p>
-                    <p style="margin:4px 0 0 0;font-size:0.85rem;color:#f8fafc;
-                               font-weight:600;word-break:break-all;">{user_email}</p>
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("🚪 Sign Out", use_container_width=True, key="btn_signout"):
-                    wb_auth.sign_out()
-                    st.session_state.wb_user = None
-                    st.session_state.wb_session = None
-                    st.rerun()
-            else:
-                # Auth toggle
-                mode_col1, mode_col2 = st.columns(2)
-                with mode_col1:
-                    if st.button("Login", use_container_width=True, key="btn_mode_login",
-                                 type="primary" if st.session_state.wb_auth_mode == "login" else "secondary"):
-                        st.session_state.wb_auth_mode = "login"
-                with mode_col2:
-                    if st.button("Register", use_container_width=True, key="btn_mode_reg",
-                                 type="primary" if st.session_state.wb_auth_mode == "register" else "secondary"):
-                        st.session_state.wb_auth_mode = "register"
-
-                with st.form("auth_form", clear_on_submit=True):
-                    auth_email = st.text_input("Email", placeholder="you@example.com", key="auth_email")
-                    auth_pass  = st.text_input("Password", type="password", key="auth_pass")
-                    auth_submit = st.form_submit_button(
-                        "✅ Sign In" if st.session_state.wb_auth_mode == "login" else "🚀 Create Account",
-                        use_container_width=True
-                    )
-                    if auth_submit:
-                        if st.session_state.wb_auth_mode == "login":
-                            result = wb_auth.sign_in(auth_email, auth_pass)
-                        else:
-                            result = wb_auth.sign_up(auth_email, auth_pass)
-                        if result["ok"]:
-                            st.session_state.wb_user = result["user"]
-                            st.session_state.wb_session = result["session"]
-                            st.success("Welcome! 🎉")
-                            st.rerun()
-                        else:
-                            st.error(result["error"])
-
-            st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-        # ─────────────────────────────────────────────────────────────────────
-
         st.markdown("""
         <div style="padding:0.5rem 0 1rem 0;">
             <p style="font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;
@@ -795,9 +700,9 @@ with tab_plan:
         """, unsafe_allow_html=True)
 
         st.markdown('<p class="section-label">📍 Where To?</p>', unsafe_allow_html=True)
-        origin = st.text_input("From", st.session_state.main_origin, key="input_origin",
+        origin = st.text_input("From", st.session_state.main_origin, key="main_origin",
                                placeholder="e.g. New Delhi, India")
-        destination = st.text_input("To", st.session_state.main_dest, key="input_dest",
+        destination = st.text_input("To", st.session_state.main_dest, key="main_dest",
                                     placeholder="e.g. Tokyo, Japan")
 
         st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
@@ -859,16 +764,6 @@ with tab_plan:
         with col_chk2:
             religious = st.checkbox("🛕 Religious Sites", value=False)
 
-        st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
-        dm_col1, dm_col2 = st.columns([3, 1])
-        with dm_col1:
-            st.markdown('<p class="section-label" style="margin:0.5rem 0 0 0;">🌙 Dark Mode</p>', unsafe_allow_html=True)
-        with dm_col2:
-            new_dark = st.toggle("", value=st.session_state.dark_mode, key="toggle_dark", label_visibility="collapsed")
-        if new_dark != st.session_state.dark_mode:
-            st.session_state.dark_mode = new_dark
-            st.rerun()
-
         st.markdown("<div style='margin-top:1rem'></div>", unsafe_allow_html=True)
         plan_button = st.button("🚀  Plan My Trip!", use_container_width=True)
 
@@ -894,25 +789,14 @@ with tab_plan:
                     st_lottie(lottie_loading, height=220, key="paperplane_img_fetch")
 
             images = fetch_images(destination)
-            img_loader_ph.empty()
+            img_loader_ph.empty()  # clear paperplane once images are ready
 
             if images:
-                st.markdown(f"""
-                <div style="display:flex;gap:12px;margin-bottom:1.5rem;border-radius:18px;overflow:hidden;">
-                    {"".join(
-                        f'<div style="flex:1;min-width:0;position:relative;overflow:hidden;border-radius:14px;">'
-                        f'<img src="{url}" style="width:100%;height:220px;object-fit:cover;display:block;'
-                        f'transition:transform 0.4s ease;" '
-                        f'onmouseover="this.style.transform=\'scale(1.05)\'" '
-                        f'onmouseout="this.style.transform=\'scale(1)\'">'
-                        f'<div style="position:absolute;bottom:0;left:0;right:0;padding:0.5rem 0.75rem;'
-                        f'background:linear-gradient(transparent,rgba(0,0,0,0.7));'
-                        f'color:#fff;font-size:0.75rem;font-weight:600;">📍 {destination}</div>'
-                        f'</div>'
-                        for url in images
-                    )}
-                </div>
-                """, unsafe_allow_html=True)
+                img_cols = st.columns(len(images))
+                for idx, img_url in enumerate(images):
+                    with img_cols[idx]:
+                        st.image(img_url, use_container_width=True,
+                                 caption=f"📍 {destination}")
 
             # ── LOADING UI — paperplane + progress bar ──────────────────────
             # Render the paperplane ONCE with a fixed key to avoid duplicate-key errors
@@ -950,60 +834,44 @@ with tab_plan:
                         unsafe_allow_html=True,
                     )
 
-            _update_progress(0, "🔥 Warming up the engines…")
+            _update_progress(0, "Warming up the engines…")
 
             try:
-                _update_progress(1, "🧠 Planner Agent — breaking your trip into research tasks…")
+                _update_progress(1, "Planning your trip…")
                 task_list = planner_agent(origin, destination, start_date, end_date, no_of_members, interests)
 
-                _update_progress(2, "🏨 Booking Agent — fetching live flights & hotels…")
+                _update_progress(1, "Fetching live flights & hotels…")
                 booking_data = booking_agent(origin, destination, start_date, end_date, no_of_members)
 
-                _update_progress(3, "💰 Budget Agent — crunching the numbers…")
+                _update_progress(2, "Crunching the budget numbers…")
                 budget_raw = budget_agent(booking_data, no_of_days, no_of_members, destination)
                 try:
                     st.session_state.budget_json = json.loads(budget_raw)
                 except Exception:
                     st.session_state.budget_json = None
 
-                _update_progress(4, "🎉 Events Agent — finding what's on during your trip…")
+                _update_progress(3, "Finding events at your destination…")
                 st.session_state.event_data = fetch_events(destination, start_date, end_date)
 
-                _update_progress(5, "📰 Blog Scraper — hunting hidden gems from travel blogs…")
+                _update_progress(4, "Scraping travel blogs for hidden gems…")
                 scraped_text = fetch_and_scrape_blogs(destination)
 
-                _update_progress(6, "🧬 RAG Engine — building destination knowledge base…")
+                _update_progress(5, "Building knowledge base…")
                 vector_db = build_vector_db(scraped_text)
 
-                _update_progress(7, "🔍 Research Agent — deep-diving your destination…")
+                _update_progress(6, "Researching your destination in depth…")
                 research_data = research_agent(task_list, destination, vector_db)
 
-                _update_progress(8, "✍️ Summary Agent — crafting your perfect day-by-day itinerary…")
+                _update_progress(7, "Crafting your perfect itinerary…")
                 vibe_note = f"Trip vibe: {trip_vibe}. Dietary: {'Vegetarian only' if only_veg else 'No restrictions'}. {'Include religious sites.' if religious else ''}"
                 final_itinerary = summary_agent(research_data, booking_data, st.session_state.event_data, start_date, end_date, destination)
                 st.session_state.final_itinerary = final_itinerary
 
-                _update_progress(9, "🌏 Local Tips Agent — loading insider knowledge…")
+                _update_progress(8, "Loading local insider tips…")
                 st.session_state.local_tips = local_tips_agent(destination)
 
-                _update_progress(9, "📍 Pinning your destination on the map…")
+                _update_progress(9, "Pinning your destination on the map…")
                 st.session_state.coords = get_coordinates(destination)
-
-                # ── Auto-save to Supabase if logged in ───────────────────────
-                if st.session_state.get("wb_user"):
-                    wb_auth.save_trip(
-                        user_id=st.session_state.wb_user.id,
-                        trip={
-                            "destination": destination,
-                            "origin": origin,
-                            "start_date": start_date,
-                            "end_date": end_date,
-                            "members": no_of_members,
-                            "itinerary": st.session_state.final_itinerary,
-                            "budget_json": st.session_state.budget_json,
-                            "local_tips": st.session_state.local_tips or "",
-                        }
-                    )
 
             except Exception as e:
                 if "429" in str(e):
@@ -1151,7 +1019,7 @@ with tab_plan:
         # ── Sub-tab 2: Budget ──
         with rt2:
             if st.session_state.budget_json:
-                b = {k: _to_int(v) for k, v in st.session_state.budget_json.items()}
+                b = st.session_state.budget_json
                 total = sum(b.values())
                 flights = b.get("Flights", 0)
                 hotels = b.get("Hotels", 0)
@@ -1615,263 +1483,3 @@ with tab_pack:
             mime="text/plain",
             use_container_width=True
         )
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# TAB 5 — TRIP HISTORY
-# ═════════════════════════════════════════════════════════════════════════════
-with tab_history:
-    st.markdown("""
-    <div style="margin-bottom:1.5rem;">
-        <p class="section-label">🗂️ Your Travel Archive</p>
-        <h2 class="wand-section-title">Trip History</h2>
-        <p style="color:#64748b;font-size:0.9rem;margin:0;">
-            All your saved trips — revisit, re-read, or delete old adventures.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    supabase_ok_hist = bool(os.environ.get("SUPABASE_URL") and os.environ.get("SUPABASE_ANON_KEY"))
-
-    if not supabase_ok_hist:
-        st.info("🔧 Add `SUPABASE_URL` and `SUPABASE_ANON_KEY` to your `.env` file to enable trip history.")
-    elif not st.session_state.wb_user:
-        st.markdown("""
-        <div class="glass-card" style="text-align:center;padding:2.5rem 1.5rem;border-color:rgba(168,85,247,0.25);">
-            <p style="font-size:2.5rem;margin:0 0 0.75rem 0;">🔐</p>
-            <p style="font-family:'Poppins',sans-serif;font-size:1.2rem;font-weight:700;
-                      color:#f8fafc;margin:0 0 0.5rem 0;">Sign in to see your trips</p>
-            <p style="color:#64748b;font-size:0.88rem;margin:0;">
-                Log in from the <strong style="color:#4ecdc4;">🗺️ Plan My Trip</strong> sidebar to access your saved adventures.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        trips = wb_auth.load_trips(st.session_state.wb_user.id)
-
-        if not trips:
-            st.markdown("""
-            <div class="glass-card" style="text-align:center;padding:2.5rem 1.5rem;">
-                <p style="font-size:2.5rem;margin:0 0 0.75rem 0;">✈️</p>
-                <p style="font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;
-                          color:#f8fafc;margin:0 0 0.4rem 0;">No trips saved yet</p>
-                <p style="color:#64748b;font-size:0.88rem;margin:0;">
-                    Plan a trip and it'll appear here automatically.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <p style="font-size:0.8rem;color:#64748b;margin-bottom:1rem;">
-                📦 {len(trips)} trip{'s' if len(trips) != 1 else ''} saved
-            </p>
-            """, unsafe_allow_html=True)
-
-            for trip in trips:
-                trip_id = trip.get("id")
-                dest = trip.get("destination", "Unknown")
-                origin = trip.get("origin", "—")
-                start = trip.get("start_date", "")
-                end = trip.get("end_date", "")
-                members = trip.get("members", 1)
-                created_raw = trip.get("created_at", "")
-                itinerary = trip.get("itinerary", "")
-                local_tips = trip.get("local_tips", "")
-
-                # Parse budget_json
-                budget_json = trip.get("budget_json")
-                if isinstance(budget_json, str):
-                    try:
-                        budget_json = json.loads(budget_json)
-                    except Exception:
-                        budget_json = None
-
-                # Format created_at
-                try:
-                    created_dt = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
-                    created_str = created_dt.strftime("%b %d, %Y at %H:%M")
-                except Exception:
-                    created_str = created_raw[:10] if created_raw else "—"
-
-                # Budget total
-                budget_total = ""
-                if budget_json and isinstance(budget_json, dict):
-                    total = sum(v for v in budget_json.values() if isinstance(v, (int, float)))
-                    budget_total = f"₹{total:,.0f}"
-
-                col_card, col_del = st.columns([11, 1])
-                with col_card:
-                    with st.expander(
-                        f"✈️  {dest}  ·  {start} → {end}  ·  👥 {members}",
-                        expanded=False
-                    ):
-                        # Trip meta strip
-                        st.markdown(f"""
-                        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">
-                            <span class="stat-pill teal">🛫 {origin}</span>
-                            <span class="stat-pill purple">📅 {start} → {end}</span>
-                            <span class="stat-pill pink">👥 {members} traveller{'s' if members != 1 else ''}</span>
-                            {"<span class='stat-pill orange'>💰 " + budget_total + "</span>" if budget_total else ""}
-                            <span class="stat-pill" style="color:#64748b;">🕒 Saved {created_str}</span>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        # Budget breakdown if available
-                        if budget_json and isinstance(budget_json, dict):
-                            b_cols = st.columns(min(len(budget_json), 5))
-                            for idx, (cat, val) in enumerate(budget_json.items()):
-                                if idx < len(b_cols):
-                                    b_cols[idx].metric(cat, f"₹{_to_int(val):,}")
-                            st.markdown("<div style='margin-bottom:0.5rem'></div>", unsafe_allow_html=True)
-
-                        # Itinerary
-                        if itinerary:
-                            st.markdown("---")
-                            st.markdown(itinerary)
-
-                        # Local tips
-                        if local_tips:
-                            st.markdown("---")
-                            with st.expander("💡 Local Tips", expanded=False):
-                                st.markdown(local_tips)
-
-                        # Re-download
-                        dl1, dl2 = st.columns(2)
-                        with dl1:
-                            if itinerary:
-                                st.download_button(
-                                    "📥 Download Itinerary",
-                                    data=itinerary,
-                                    file_name=f"Wandrly_{dest.replace(' ','_')}_{start}.md",
-                                    mime="text/markdown",
-                                    use_container_width=True,
-                                    key=f"dl_md_{trip_id}"
-                                )
-                        with dl2:
-                            if budget_json:
-                                budget_text = f"Budget for {dest} ({start} → {end})\n\n"
-                                budget_text += "\n".join(f"{k}: ₹{_to_int(v):,}" for k, v in budget_json.items())
-                                st.download_button(
-                                    "💰 Download Budget",
-                                    data=budget_text,
-                                    file_name=f"Wandrly_Budget_{dest.replace(' ','_')}.txt",
-                                    mime="text/plain",
-                                    use_container_width=True,
-                                    key=f"dl_bgt_{trip_id}"
-                                )
-
-                with col_del:
-                    st.markdown("<div style='margin-top:0.35rem'></div>", unsafe_allow_html=True)
-                    if st.button("🗑️", key=f"del_{trip_id}", help="Delete this trip"):
-                        result = wb_auth.delete_trip(trip_id)
-                        if result.get("ok"):
-                            st.success("Trip deleted.")
-                            st.rerun()
-                        else:
-                            st.error(result.get("error", "Delete failed."))
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# TAB 6 — FLIGHT TRACKER
-# ═════════════════════════════════════════════════════════════════════════════
-with tab_flights:
-    st.markdown("""
-    <div style="margin-bottom:1.5rem;">
-        <p class="section-label">✈️ Real-Time Flight Status</p>
-        <h2 class="wand-section-title">Flight Tracker</h2>
-        <p style="color:#64748b;font-size:0.9rem;margin:0;">
-            Track live flight status by flight number or route — powered by AviationStack.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if not os.environ.get("AVIATIONSTACK_KEY"):
-        st.warning("⚠️ Add `AVIATIONSTACK_KEY` to your `.env` file to enable live flight tracking.")
-    else:
-        ft_mode = st.radio("Search by", ["✈️ Flight Number", "🛣️ Route (IATA codes)"],
-                           horizontal=True, key="ft_mode")
-
-        ft_results = []
-        ft_searched = False
-
-        if ft_mode == "✈️ Flight Number":
-            ft_col1, ft_col2 = st.columns([2, 1])
-            with ft_col1:
-                ft_flight = st.text_input("Flight number (e.g. AI101, 6E204)", key="ft_flight_num",
-                                          placeholder="AI101").strip().upper()
-            with ft_col2:
-                ft_date = st.date_input("Date", value=date.today(), key="ft_date_num")
-            if st.button("🔍 Track Flight", use_container_width=True, key="ft_btn_num") and ft_flight:
-                with st.spinner("Fetching live flight data…"):
-                    ft_results = fetch_live_flights(flight_iata=ft_flight, flight_date=str(ft_date))
-                ft_searched = True
-        else:
-            ft_col1, ft_col2, ft_col3 = st.columns([1, 1, 1])
-            with ft_col1:
-                ft_dep = st.text_input("From IATA (e.g. DEL)", key="ft_dep", placeholder="DEL").strip().upper()
-            with ft_col2:
-                ft_arr = st.text_input("To IATA (e.g. BOM)", key="ft_arr", placeholder="BOM").strip().upper()
-            with ft_col3:
-                ft_date_r = st.date_input("Date", value=date.today(), key="ft_date_route")
-            if st.button("🔍 Search Route", use_container_width=True, key="ft_btn_route") and ft_dep and ft_arr:
-                with st.spinner("Fetching live flight data…"):
-                    ft_results = fetch_live_flights(dep_iata=ft_dep, arr_iata=ft_arr, flight_date=str(ft_date_r))
-                ft_searched = True
-
-        if ft_searched and not ft_results:
-            st.info("No flights found. Try a different flight number, route, or date.")
-        elif ft_results:
-            st.markdown(f"**{len(ft_results)} flight(s) found:**")
-            for fl in ft_results:
-                airline = fl.get("airline", {}).get("name", "Unknown Airline")
-                fnum = fl.get("flight", {}).get("iata", "N/A")
-                status = fl.get("flight_status", "unknown").upper()
-                dep = fl.get("departure", {})
-                arr = fl.get("arrival", {})
-                dep_airport = dep.get("airport", "N/A")
-                arr_airport = arr.get("airport", "N/A")
-                dep_sched = dep.get("scheduled", "N/A")
-                arr_sched = arr.get("scheduled", "N/A")
-                dep_actual = dep.get("actual") or dep.get("estimated") or dep_sched
-                arr_actual = arr.get("actual") or arr.get("estimated") or arr_sched
-                delay = dep.get("delay")
-
-                status_color = {
-                    "ACTIVE": "#4ecdc4", "LANDED": "#22c55e", "SCHEDULED": "#a855f7",
-                    "CANCELLED": "#ef4444", "DIVERTED": "#f59e0b"
-                }.get(status, "#94a3b8")
-
-                delay_badge = ""
-                if delay and int(delay) > 0:
-                    delay_badge = f'<span style="background:#f59e0b22;color:#f59e0b;border-radius:6px;padding:2px 8px;font-size:0.72rem;font-weight:700;">⏱ +{delay} min delay</span>'
-
-                st.markdown(f"""
-                <div class="glass-card" style="padding:1.25rem 1.5rem;margin-bottom:1rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-                        <div>
-                            <span style="font-size:1.1rem;font-weight:800;color:#f8fafc;">{fnum}</span>
-                            <span style="color:#64748b;font-size:0.85rem;margin-left:0.5rem;">{airline}</span>
-                            {delay_badge}
-                        </div>
-                        <span style="background:{status_color}22;color:{status_color};border-radius:8px;
-                                     padding:3px 12px;font-size:0.75rem;font-weight:700;letter-spacing:0.5px;">
-                            ● {status}
-                        </span>
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;margin-top:1rem;align-items:center;">
-                        <div>
-                            <p style="margin:0;font-size:0.7rem;color:#4ecdc4;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Departure</p>
-                            <p style="margin:4px 0 2px 0;font-size:0.95rem;font-weight:700;color:#f8fafc;">{dep_airport}</p>
-                            <p style="margin:0;font-size:0.75rem;color:#94a3b8;">Scheduled: {dep_sched[:16] if dep_sched != 'N/A' else 'N/A'}</p>
-                            <p style="margin:0;font-size:0.75rem;color:#64748b;">Actual: {dep_actual[:16] if dep_actual != 'N/A' else 'N/A'}</p>
-                        </div>
-                        <div style="text-align:center;color:#a855f7;font-size:1.5rem;">✈️</div>
-                        <div style="text-align:right;">
-                            <p style="margin:0;font-size:0.7rem;color:#a855f7;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Arrival</p>
-                            <p style="margin:4px 0 2px 0;font-size:0.95rem;font-weight:700;color:#f8fafc;">{arr_airport}</p>
-                            <p style="margin:0;font-size:0.75rem;color:#94a3b8;">Scheduled: {arr_sched[:16] if arr_sched != 'N/A' else 'N/A'}</p>
-                            <p style="margin:0;font-size:0.75rem;color:#64748b;">Actual: {arr_actual[:16] if arr_actual != 'N/A' else 'N/A'}</p>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
